@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npx playwright test --list)",
+      "Bash(npx playwright test)",
+      "Bash(npx playwright test tests/cart/cart.spec.ts --headed --timeout=15000)",
+      "Bash(curl -s \"https://www.demoblaze.com/prod.html?idp_=1\")",
+      "Bash(curl -sL \"https://www.demoblaze.com/prod.html?idp_=1\")",
+      "Bash(npx playwright test tests/cart/cart.spec.ts)",
+      "Bash(npx playwright test tests/cart/cart.spec.ts --grep \"Place order with valid data\")"
+    ]
+  }
+}
