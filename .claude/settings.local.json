@@ -8,7 +8,12 @@
       "Bash(curl -s \"https://www.demoblaze.com/prod.html?idp_=1\")",
       "Bash(curl -sL \"https://www.demoblaze.com/prod.html?idp_=1\")",
       "Bash(npx playwright test tests/cart/cart.spec.ts)",
-      "Bash(npx playwright test tests/cart/cart.spec.ts --grep \"Place order with valid data\")"
+      "Bash(npx playwright test tests/cart/cart.spec.ts --grep \"Place order with valid data\")",
+      "Bash(git rm -r --cached reports/ test-results/)",
+      "Bash(BROWSER=firefox npx playwright test --list)",
+      "Bash(BROWSER=firefox npx playwright test tests/auth/signup.spec.ts --grep \"empty\")",
+      "Bash(npx playwright install firefox)",
+      "Bash(BROWSER=firefox npx playwright test tests/auth/signup.spec.ts)"
     ]
   }
 }
