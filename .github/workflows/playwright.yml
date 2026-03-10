@@ -36,6 +36,7 @@ jobs:
   api-tests:
     name: API Tests
     runs-on: ubuntu-latest
+    environment: dev
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.test_scope == 'all' || inputs.test_scope == 'api' }}
 
     steps:
@@ -79,6 +80,7 @@ jobs:
   web-tests:
     name: Web Tests - ${{ matrix.browser }}
     runs-on: ubuntu-latest
+    environment: dev
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.test_scope == 'all' || inputs.test_scope == 'web' }}
 
     strategy:
