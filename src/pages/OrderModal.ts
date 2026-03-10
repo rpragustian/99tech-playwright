@@ -19,6 +19,7 @@ export class OrderModal extends BasePage {
   private readonly yearInput = this.locator('#year');
   private readonly purchaseButton = this.locator("button[onclick='purchaseOrder()']");
   private readonly successTitle = this.locator('.sweet-alert h2');
+  private readonly successBody = this.locator('.sweet-alert p');
   private readonly successConfirmButton = this.locator('.sweet-alert .confirm');
 
   constructor(page: Page) {
@@ -43,5 +44,16 @@ export class OrderModal extends BasePage {
     const message = await this.successTitle.innerText();
     await this.successConfirmButton.click({ force: true });
     return message;
+  }
+
+  async getSuccessDetailsAndConfirm(): Promise<{ title: string; amount: number }> {
+    await this.successTitle.waitFor({ state: 'visible', timeout: 8000 });
+    const title = await this.successTitle.innerText();
+    const bodyText = await this.successBody.innerText();
+    // Body format: "Id: 123\nAmount: 299 USD\nCard Number: ...\nName: ...\nDate: ..."
+    const amountMatch = bodyText.match(/Amount:\s*([\d.]+)/i);
+    const amount = amountMatch ? parseFloat(amountMatch[1]) : 0;
+    await this.successConfirmButton.click({ force: true });
+    return { title, amount };
   }
 }

@@ -3,6 +3,7 @@ import { BasePage } from './BasePage';
 
 export class CartPage extends BasePage {
   private readonly cartRows = this.locator('#tbodyid tr');
+  private readonly totalAmount = this.locator('#totalp');
   private readonly placeOrderButton = this.locator('button.btn-success');
 
   constructor(page: Page) {
@@ -21,6 +22,12 @@ export class CartPage extends BasePage {
   async getItemNames(): Promise<string[]> {
     await this.page.waitForTimeout(1500);
     return this.locator('#tbodyid tr td:nth-child(2)').allInnerTexts();
+  }
+
+  async getTotal(): Promise<number> {
+    await this.page.waitForTimeout(1500);
+    const text = await this.totalAmount.innerText();
+    return parseFloat(text) || 0;
   }
 
   async deleteItem(name: string): Promise<void> {

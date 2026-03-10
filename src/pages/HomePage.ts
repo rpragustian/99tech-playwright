@@ -4,6 +4,9 @@ import { BasePage } from './BasePage';
 export class HomePage extends BasePage {
   private readonly signUpLink = this.locator('a#signin2');
   private readonly loginLink = this.locator('a#login2');
+  private readonly logoutLink = this.locator('a#logout2');
+  private readonly contactLink = this.locator('a[data-target="#exampleModal"]');
+  private readonly aboutUsLink = this.locator('a[data-target="#videoModal"]');
   private readonly loggedInUsername = this.locator('#nameofuser');
   private readonly cartLink = this.locator('a#cartur');
 
@@ -87,7 +90,26 @@ export class HomePage extends BasePage {
     return this.loggedInUsername.isVisible();
   }
 
+  async isLoggedOut(): Promise<boolean> {
+    return this.loginLink.isVisible();
+  }
+
   async getLoggedInUsername(): Promise<string> {
     return this.loggedInUsername.innerText();
+  }
+
+  async logout(): Promise<void> {
+    await this.logoutLink.click();
+    await this.loginLink.waitFor({ state: 'visible' });
+  }
+
+  async openContact(): Promise<void> {
+    await this.contactLink.click();
+    await this.locator('#exampleModal.show').waitFor({ state: 'visible' });
+  }
+
+  async openAboutUs(): Promise<void> {
+    await this.aboutUsLink.click();
+    await this.locator('#videoModal.show').waitFor({ state: 'visible' });
   }
 }

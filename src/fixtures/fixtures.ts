@@ -5,6 +5,8 @@ import { LoginModal } from '../pages/LoginModal';
 import { ProductPage } from '../pages/ProductPage';
 import { CartPage } from '../pages/CartPage';
 import { OrderModal } from '../pages/OrderModal';
+import { ContactModal } from '../pages/ContactModal';
+import { AboutUsModal } from '../pages/AboutUsModal';
 
 type Fixtures = {
   homePage: HomePage;
@@ -13,6 +15,8 @@ type Fixtures = {
   productPage: ProductPage;
   cartPage: CartPage;
   orderModal: OrderModal;
+  contactModal: ContactModal;
+  aboutUsModal: AboutUsModal;
 };
 
 export const test = base.extend<Fixtures>({
@@ -33,6 +37,12 @@ export const test = base.extend<Fixtures>({
   },
   orderModal: async ({ page }, use) => {
     await use(new OrderModal(page));
+  },
+  contactModal: async ({ page }, use) => {
+    await use(new ContactModal(page));
+  },
+  aboutUsModal: async ({ page }, use) => {
+    await use(new AboutUsModal(page));
   },
 });
 

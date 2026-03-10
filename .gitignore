@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# IDEs and OS files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/blob-report/
+/reports/
+
+# TypeScript/Build output
+dist/
+build/
