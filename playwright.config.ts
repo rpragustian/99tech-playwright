@@ -3,23 +3,25 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const getBrowserConfig = () => {
-  const browserName = (process.env.BROWSER || 'chrome').toLowerCase();
-  switch (browserName) {
-    case 'firefox':
-      return { name: 'firefox', use: { ...devices['Desktop Firefox'] } };
-    case 'webkit':
-    case 'safari':
-      return { name: 'webkit', use: { ...devices['Desktop Safari'] } };
-    case 'chromium':
-      return { name: 'chromium', use: { ...devices['Desktop Chrome'] } };
-    case 'edge':
-    case 'msedge':
-      return { name: 'Microsoft Edge', use: { ...devices['Desktop Edge'], channel: 'msedge' } };
-    case 'chrome':
-    default:
-      return { name: 'Google Chrome', use: { ...devices['Desktop Chrome'], channel: 'chrome' } };
-  }
+const getBrowserConfigs = () => {
+  const browserNames = (process.env.BROWSER || 'chrome').toLowerCase().split(',').map(b => b.trim());
+  return browserNames.map(browserName => {
+    switch (browserName) {
+      case 'firefox':
+        return { name: 'firefox', testIgnore: '**/tests/api/**', use: { ...devices['Desktop Firefox'] } };
+      case 'webkit':
+      case 'safari':
+        return { name: 'webkit', testIgnore: '**/tests/api/**', use: { ...devices['Desktop Safari'] } };
+      case 'chromium':
+        return { name: 'chromium', testIgnore: '**/tests/api/**', use: { ...devices['Desktop Chrome'] } };
+      case 'edge':
+      case 'msedge':
+        return { name: 'Microsoft Edge', testIgnore: '**/tests/api/**', use: { ...devices['Desktop Edge'], channel: 'msedge' } };
+      case 'chrome':
+      default:
+        return { name: 'Google Chrome', testIgnore: '**/tests/api/**', use: { ...devices['Desktop Chrome'], channel: 'chrome' } };
+    }
+  });
 };
 
 export default defineConfig({
@@ -36,7 +38,11 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    getBrowserConfig(),
+    ...getBrowserConfigs(),
+    {
+      name: 'api',
+      testMatch: '**/tests/api/**/*.spec.ts',
+    },
   ],
   reporter: [
     ['list'],

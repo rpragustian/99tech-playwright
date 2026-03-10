@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../../src/fixtures/fixtures';
 import { waitForAlertMessage } from '../../src/utils/alertHelper';
 
-test.describe('Navigation Menu', () => {
+test.describe('Navigation Menu', { tag: ['@web', '@navigation'] }, () => {
   test.beforeEach(async ({ homePage }) => {
     await test.step('Navigate to home page', async () => {
       await homePage.open();

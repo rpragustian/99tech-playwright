@@ -13,7 +13,13 @@
       "Bash(BROWSER=firefox npx playwright test --list)",
       "Bash(BROWSER=firefox npx playwright test tests/auth/signup.spec.ts --grep \"empty\")",
       "Bash(npx playwright install firefox)",
-      "Bash(BROWSER=firefox npx playwright test tests/auth/signup.spec.ts)"
+      "Bash(BROWSER=firefox npx playwright test tests/auth/signup.spec.ts)",
+      "Bash(npx playwright test tests/api/ --project=api)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://reqres.in/api/users/1)",
+      "Bash(curl -s -I https://reqres.in/api/users/1)",
+      "Bash(curl -s https://reqres.in/api/users/1 -H \"x-api-key: reqres-free-v1\")",
+      "Bash(npx playwright test tests/api/ --project=api --grep \"@api\" --list)",
+      "Bash(npx playwright test --project=firefox --grep \"@web\" --list)"
     ]
   }
 }

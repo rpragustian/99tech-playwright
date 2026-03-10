@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../../src/fixtures/fixtures';
 import { waitForAlertMessage } from '../../src/utils/alertHelper';
 
-test.describe('Shopping Cart', () => {
+test.describe('Shopping Cart', { tag: ['@web', '@cart'] }, () => {
   test.beforeEach(async ({ homePage }) => {
     await test.step('Navigate to home page', async () => {
       await homePage.open();

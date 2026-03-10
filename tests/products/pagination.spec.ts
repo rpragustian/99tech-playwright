@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../../src/fixtures/fixtures';
 
-test.describe('Product List Pagination', () => {
+test.describe('Product List Pagination', { tag: ['@web', '@pagination'] }, () => {
   test.beforeEach(async ({ homePage }) => {
     await test.step('Navigate to home page', async () => {
       await homePage.open();
