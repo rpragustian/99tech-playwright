@@ -16,6 +16,7 @@ on:
           - all
           - api
           - web
+          - perf
       browser:
         description: 'Browser for web tests (only used when scope is web or all)'
         required: false
@@ -134,7 +135,7 @@ jobs:
     name: Performance Tests (k6)
     runs-on: ubuntu-latest
     environment: dev
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test_scope == 'all' || inputs.test_scope == 'api' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.test_scope == 'all' || inputs.test_scope == 'perf') }}
 
     steps:
       - name: Checkout repository

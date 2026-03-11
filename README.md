@@ -241,13 +241,13 @@ The workflow at `.github/workflows/playwright.yml` runs on push/PR to `main` or 
 **Jobs:**
 - `api-tests` — runs all Playwright API tests (no browser required)
 - `web-tests` — matrix run across `chromium` and `firefox`
-- `perf-tests` — runs k6 API load test (1 VU, 30s)
+- `perf-tests` — runs k6 API load test — **manual trigger only**
 
 **Manual dispatch inputs:**
 
 | Input | Options | Default |
 |-------|---------|---------|
-| `test_scope` | `all`, `api`, `web` | `all` |
+| `test_scope` | `all`, `api`, `web`, `perf` | `all` |
 | `browser` | `chromium`, `firefox`, `webkit` | `chromium` |
 | `tag` | any tag string | _(all)_ |
 
