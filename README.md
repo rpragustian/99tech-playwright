@@ -34,7 +34,10 @@ A modular end-to-end test automation framework built with **Playwright** and **T
 │   └── k6/
 │       ├── api-load.js   # k6 API load test (reqres.in)
 │       └── ui-smoke.js   # k6 Browser performance test (demoblaze.com)
-├── .github/workflows/    # GitHub Actions CI/CD
+├── .github/
+│   └── workflows/
+│       ├── playwright.yml    # CI/CD for Playwright tests (API + Web)
+│       └── performance.yml   # CI/CD for k6 performance tests (manual only)
 ├── global-setup.ts       # Auto-installs missing browser before tests run
 ├── playwright.config.ts  # Playwright configuration
 └── .env.example          # Environment variable template
@@ -236,29 +239,58 @@ demoblaze.com uses both native `window.alert()` and SweetAlert popups. The `aler
 
 ## CI/CD (GitHub Actions)
 
-The workflow at `.github/workflows/playwright.yml` runs on push/PR to `main` or `develop`, and supports manual dispatch.
+Performance tests have a **dedicated workflow** separate from Playwright tests to allow independent triggering, scoping, and configuration.
+
+---
+
+### `playwright.yml` — Playwright Tests
+
+Runs automatically on push/PR to `main` or `develop`, and supports manual dispatch.
 
 **Jobs:**
 - `api-tests` — runs all Playwright API tests (no browser required)
 - `web-tests` — matrix run across `chromium` and `firefox`
-- `perf-tests` — runs k6 API load test — **manual trigger only**
 
 **Manual dispatch inputs:**
 
 | Input | Options | Default |
 |-------|---------|---------|
-| `test_scope` | `all`, `api`, `web`, `perf` | `all` |
+| `test_scope` | `all`, `api`, `web` | `all` |
 | `browser` | `chromium`, `firefox`, `webkit` | `chromium` |
 | `tag` | any tag string | _(all)_ |
 
-**Required GitHub Secrets** (stored under the `dev` environment):
-
-| Secret | Description |
-|--------|-------------|
-| `BASE_URL` | UI test base URL |
-| `API_BASE_URL` | API base URL |
-| `API_KEY` | reqres.in API key |
-| `TEST_USERNAME` | Test account username |
-| `TEST_PASSWORD` | Test account password |
-
 HTML reports are uploaded as artifacts and retained for 7 days.
+
+---
+
+### `performance.yml` — Performance Tests (k6)
+
+**Manual trigger only** — never runs automatically on push/PR.
+
+**Jobs:**
+- `api-load-test` — k6 API load test against reqres.in
+- `ui-smoke-test` — k6 Browser test measuring Core Web Vitals on demoblaze.com
+
+**Manual dispatch inputs:**
+
+| Input | Options | Default | Description |
+|-------|---------|---------|-------------|
+| `test_scope` | `all`, `api`, `ui` | `all` | Which k6 test to run |
+| `vus` | any number | `1` | Number of virtual users (API test only) |
+| `duration` | e.g. `30s`, `1m` | `30s` | Test duration (API test only) |
+
+k6 summary JSON files are uploaded as artifacts and retained for 7 days.
+
+---
+
+### Required GitHub Secrets
+
+Stored under the `dev` environment, shared by both workflows:
+
+| Secret | Used by | Description |
+|--------|---------|-------------|
+| `BASE_URL` | Playwright web, k6 UI | UI test base URL |
+| `API_BASE_URL` | Playwright API, k6 API | API base URL |
+| `API_KEY` | Playwright API, k6 API | reqres.in API key |
+| `TEST_USERNAME` | Playwright web | Test account username |
+| `TEST_PASSWORD` | Playwright web | Test account password |

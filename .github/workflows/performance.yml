@@ -1,0 +1,88 @@
+name: Performance Tests (k6)
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: 'Which performance test to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - api
+          - ui
+      vus:
+        description: 'Number of virtual users (VUs)'
+        required: false
+        default: '1'
+        type: string
+      duration:
+        description: 'Test duration (e.g. 30s, 1m, 5m)'
+        required: false
+        default: '30s'
+        type: string
+
+jobs:
+  # ─── API Load Test ────────────────────────────────────────────────────────
+  api-load-test:
+    name: API Load Test
+    runs-on: ubuntu-latest
+    environment: dev
+    if: ${{ inputs.test_scope == 'all' || inputs.test_scope == 'api' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run API load test
+        run: |
+          k6 run \
+            --env API_BASE_URL=${{ secrets.API_BASE_URL }} \
+            --env API_KEY=${{ secrets.API_KEY }} \
+            --env VUS=${{ inputs.vus }} \
+            --env DURATION=${{ inputs.duration }} \
+            --summary-export=k6-api-summary.json \
+            performance/k6/api-load.js
+
+      - name: Upload API test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-api-results
+          path: k6-api-summary.json
+          retention-days: 7
+
+  # ─── UI Smoke Test ────────────────────────────────────────────────────────
+  ui-smoke-test:
+    name: UI Smoke Test
+    runs-on: ubuntu-latest
+    environment: dev
+    if: ${{ inputs.test_scope == 'all' || inputs.test_scope == 'ui' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+        with:
+          browser: true
+
+      - name: Run UI smoke test
+        run: |
+          k6 run \
+            --env BASE_URL=${{ secrets.BASE_URL }} \
+            --summary-export=k6-ui-summary.json \
+            performance/k6/ui-smoke.js
+
+      - name: Upload UI test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-ui-results
+          path: k6-ui-summary.json
+          retention-days: 7
