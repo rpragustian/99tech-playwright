@@ -1,6 +1,6 @@
 # Playwright E2E Automation Framework
 
-A modular end-to-end test automation framework built with **Playwright** and **TypeScript**, covering both **UI** (demoblaze.com) and **API** (reqres.in) testing — without Gherkin/Cucumber.
+A modular end-to-end test automation framework built with **Playwright** and **TypeScript**, covering both **UI** (demoblaze.com) and **API** (reqres.in) testing.
 
 ---
 
@@ -9,6 +9,7 @@ A modular end-to-end test automation framework built with **Playwright** and **T
 | Tool | Purpose |
 |------|---------|
 | [Playwright](https://playwright.dev) | Browser automation & API testing |
+| [k6](https://k6.io) | Performance & load testing |
 | TypeScript | Type-safe test code |
 | dotenv | Environment variable management |
 | GitHub Actions | CI/CD pipeline |
@@ -29,6 +30,10 @@ A modular end-to-end test automation framework built with **Playwright** and **T
 │   ├── cart/             # UI cart & order tests
 │   ├── navigation/       # UI navigation tests (contact, about us)
 │   └── products/         # UI product tests (categories, pagination)
+├── performance/
+│   └── k6/
+│       ├── api-load.js   # k6 API load test (reqres.in)
+│       └── ui-smoke.js   # k6 Browser performance test (demoblaze.com)
 ├── .github/workflows/    # GitHub Actions CI/CD
 ├── global-setup.ts       # Auto-installs missing browser before tests run
 ├── playwright.config.ts  # Playwright configuration
@@ -42,6 +47,7 @@ A modular end-to-end test automation framework built with **Playwright** and **T
 ### Prerequisites
 - Node.js 18+
 - npm
+- [k6](https://k6.io/docs/get-started/installation/) (for performance tests only)
 
 ### Installation
 
@@ -129,6 +135,58 @@ npm run test:report
 
 ---
 
+## Performance Testing (k6)
+
+Performance tests live in `performance/k6/` and use [k6](https://k6.io) — a separate tool from Playwright focused on load and performance metrics.
+
+### Install k6
+
+```bash
+# macOS
+brew install k6
+```
+
+### Run performance tests
+
+```bash
+# API load test (reqres.in)
+npm run perf:api
+
+# UI browser performance test (demoblaze.com) — requires k6 with browser module
+npm run perf:ui
+```
+
+### What each script tests
+
+**`api-load.js`** — Sends requests across 6 endpoint groups under configurable load:
+
+| Group | Endpoint |
+|-------|----------|
+| Users — list | GET /api/users |
+| Users — get by ID | GET /api/users/2 |
+| Users — not found | GET /api/users/999 |
+| Users — create | POST /api/users |
+| Auth — login (valid) | POST /api/login |
+| Auth — login (missing password) | POST /api/login |
+
+Default: **1 VU, 30s** (~18 requests/run). Override via env vars:
+```bash
+k6 run -e VUS=5 -e DURATION=2m performance/k6/api-load.js
+```
+
+**`ui-smoke.js`** — Opens the demoblaze.com home, product, and cart pages with 3 concurrent virtual users and automatically collects **Core Web Vitals**:
+
+| Metric | Threshold |
+|--------|-----------|
+| LCP (Largest Contentful Paint) | p75 < 2500ms |
+| FCP (First Contentful Paint) | p75 < 1800ms |
+| CLS (Cumulative Layout Shift) | p75 < 0.1 |
+| TTFB (Time To First Byte) | p75 < 600ms |
+
+> **Note:** reqres.in free tier allows **250 requests/day**. The default 1 VU / 30s config uses ~18 requests per run. For higher load, upgrade your reqres.in plan.
+
+---
+
 ## Test Tags
 
 Tags are applied at the `describe` level and can be combined with `--grep`.
@@ -181,8 +239,9 @@ demoblaze.com uses both native `window.alert()` and SweetAlert popups. The `aler
 The workflow at `.github/workflows/playwright.yml` runs on push/PR to `main` or `develop`, and supports manual dispatch.
 
 **Jobs:**
-- `api-tests` — runs all API tests (no browser required)
+- `api-tests` — runs all Playwright API tests (no browser required)
 - `web-tests` — matrix run across `chromium` and `firefox`
+- `perf-tests` — runs k6 API load test (1 VU, 30s)
 
 **Manual dispatch inputs:**
 

@@ -7,12 +7,15 @@
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "test:report": "playwright test --reporter=html",
-    "install:browsers": "playwright install"
+    "install:browsers": "playwright install",
+    "perf:api": "dotenv -e .env -- k6 run performance/k6/api-load.js",
+    "perf:ui": "dotenv -e .env -- k6 run performance/k6/ui-smoke.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.0.0",
     "dotenv": "^16.4.0",
+    "dotenv-cli": "^11.0.0",
     "typescript": "^5.7.0"
   }
 }

@@ -128,3 +128,28 @@ jobs:
           name: report-web-${{ matrix.browser }}
           path: reports/playwright-html/
           retention-days: 7
+
+  # ─── Performance Tests (k6) ───────────────────────────────────────────────
+  perf-tests:
+    name: Performance Tests (k6)
+    runs-on: ubuntu-latest
+    environment: dev
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test_scope == 'all' || inputs.test_scope == 'api' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run API load test
+        run: k6 run --env API_BASE_URL=${{ secrets.API_BASE_URL }} --env API_KEY=${{ secrets.API_KEY }} performance/k6/api-load.js
+
+      - name: Upload k6 results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-results
+          path: k6-summary.json
+          retention-days: 7
